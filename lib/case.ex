@@ -13,15 +13,41 @@ defmodule CodeFlow.Case do
   alias CodeFlow.Schemas.User
   alias CodeFlow.Fake.Users
 
-  def classify_user(_user) do
+  def classify_user(user) do
+    case user do
+      %User{age: nil} ->
+        {:error, "Age is required"}
 
+      %User{age: age} when age in 0..17 ->
+        {:ok, :minor}
+
+      %User{age: age} when age >= 18 ->
+        {:ok, :adult}
+
+      _ ->
+        {:error, :invalid}
+    end
   end
 
-  def read_file(_filename) do
+  def read_file(filename) do
+    case File.read(filename) do
+      {:error, :enoent} ->
+        {:error, "File not found"}
 
+      {:ok, file} ->
+        {:ok, file}
+    end
   end
 
-  def find_user(_user_id) do
+  def find_user(user_id) do
+    alias CodeFlow.Fake.Users
 
+    case Users.one(user_id) do
+      %User{} = user ->
+        {:ok, user}
+
+      nil ->
+        {:error, "User not found"}
+    end
   end
 end

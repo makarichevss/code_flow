@@ -24,6 +24,7 @@ defmodule CodeFlow.ComprehensionTest do
         %User{id: 5, name: "Sherry Gruceman", points: 75, active: true},
         %User{id: 6, name: "Larry Brown", points: 0, active: false}
       ]
+
       results = Comprehension.award_unfair_points(users, 100)
       assert length(results) == 3
       # assert 3 expected users returned with desired incremented point values
@@ -61,15 +62,16 @@ defmodule CodeFlow.ComprehensionTest do
 
   defp assert_board_contains(board, col, row, name) do
     assert is_list(board), "Board should be a list"
-    case Enum.  find(board, &(&1.name == name)) do
+
+    case Enum.find(board, &(&1.name == name)) do
       %{col: c, row: r} = _found ->
-        assert col == c, "Column value is wrong for #{inspect name}"
-        assert row == r, "Row value is wrong for #{inspect name}"
+        assert col == c, "Column value is wrong for #{inspect(name)}"
+        assert row == r, "Row value is wrong for #{inspect(name)}"
         # assertions passed, return the board so we can continue piping
         board
 
       nil ->
-        raise "Board does not contain name #{inspect name}"
+        raise "Board does not contain name #{inspect(name)}"
     end
   end
 
@@ -79,7 +81,10 @@ defmodule CodeFlow.ComprehensionTest do
     end
 
     test "returns 0 when no active users" do
-      assert 0 == Comprehension.team_points([%User{id: 4, name: "Lou Gruceman", points: 250, active: false}])
+      assert 0 ==
+               Comprehension.team_points([
+                 %User{id: 4, name: "Lou Gruceman", points: 250, active: false}
+               ])
     end
 
     test "totals points of active users" do
@@ -91,6 +96,7 @@ defmodule CodeFlow.ComprehensionTest do
         %User{id: 5, name: "Sherry Gruceman", points: 75, active: true},
         %User{id: 6, name: "Larry Brown", points: 0, active: false}
       ]
+
       assert 445 == Comprehension.team_points(users)
     end
   end
