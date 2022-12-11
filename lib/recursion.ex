@@ -10,14 +10,23 @@ defmodule CodeFlow.Recursion do
   @moduledoc """
   Fix or complete the code to make the tests pass.
   """
-  # alias CodeFlow.Fake.Customers
-  # alias CodeFlow.Schemas.OrderItem
+  alias CodeFlow.Fake.Customers
+  alias CodeFlow.Schemas.Customer
+  alias CodeFlow.Schemas.OrderItem
 
   @doc """
   Sum a list of OrderItems to compute the order total.
   """
-  def order_total(_order_items) do
+  def order_total(order_items) do
+    do_order_total(order_items, 0)
+  end
 
+  defp do_order_total([%OrderItem{} = order_item | rest], total) do
+    do_order_total(rest, order_item.quantity * order_item.item.price + total)
+  end
+
+  defp do_order_total([], total) do
+    total
   end
 
   @doc """
@@ -25,16 +34,37 @@ defmodule CodeFlow.Recursion do
   query to an SQL database. This is just to practice conditionally incrementing
   a counter and looping using recursion.
   """
-  def count_active(_customers) do
+  def count_active(customers) do
+    do_count_active(customers, 0)
+  end
 
+  defp do_count_active([%Customer{active: true} | rest], total) do
+    do_order_total(rest, 1 + total)
+  end
+
+  defp do_count_active([_customer | rest], total) do
+    do_order_total(rest, total)
+  end
+
+  defp do_count_active([], total) do
+    total
   end
 
   @doc """
   Create the desired number of customers. Provide the number of customers to
   create. Something like this could be used in a testing setup.
   """
-  def create_customers(_number) do
+  def create_customers(number) do
+    do_create_customers(number, 0)
+  end
 
+  defp do_create_customers(total, num) when num < total do
+    {:ok, _customer} = Customers.create(%{name: "Customer #{num}"})
+    do_create_customers(total, num + 1)
+  end
+
+  defp do_create_customers(_num, total) do
+    "Created #{total} customers!"
   end
 
   @doc """
@@ -43,7 +73,10 @@ defmodule CodeFlow.Recursion do
   sequence.
   https://en.wikipedia.org/wiki/Fibonacci_number
   """
-  def fibonacci(_num) do
+  def fibonacci(0), do: 0
+  def fibonacci(1), do: 1
 
+  def fibonacci(num) do
+    fibonacci(num - 2) + fibonacci(num - 1)
   end
 end
